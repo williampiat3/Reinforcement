@@ -12,3 +12,10 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 [video](https://youtu.be/lfHX2hHRMVQ)
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/2.MDP/markov_decision_processes.ipynb)
+
+## 3. Planning by Dynammic Programming
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/DP.pdf)
+
+[video](https://youtu.be/Nd1-UUMVfz4)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/3.DynamicProgramming/planning_dp.ipynb)
