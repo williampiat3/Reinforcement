@@ -13,9 +13,23 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/2.MDP/markov_decision_processes.ipynb)
 
-## 3. Planning by Dynammic Programming
+## 3. Planning by Dynamic Programming
 [slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/DP.pdf)
 
 [video](https://youtu.be/Nd1-UUMVfz4)
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/3.DynamicProgramming/planning_dp.ipynb)
+
+## 4. Model Free prediction
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/MC-TD.pdf)
+
+[video](https://youtu.be/PnHCvfgC_ZA)
+
+[my comment](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/4.ModelFreePrediction/model_free_prediction.ipynb)
+
+## 5. Model Free control
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/control.pdf)
+
+[video](https://youtu.be/0g4j2k_Ggc4)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/5.ModelFreeControl/model_free_control.ipynb)
