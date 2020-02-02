@@ -8,6 +8,6 @@ Following the lessons of the UCL I implemented some of the situations presented 
 Using my newly acquired experience I applied reinforcement learning to some cases of my own to check if it was able to solve some environements. Some of the environement come from [gym](https://gym.openai.com/) some others were environements I coded.
 
 # About
-I don't claim to be a reinforcement learning expert, but following these courses and reading some main references really made me see that there was a different way to solve lots of everyday optimization problems. It showed me that human policies are not optimal in every domain and that reinforcement provides a way to learn the best way of dealing with a problem. We only tell our algorithm what it has to accomplish, we don't tell it how to do it: we have to give up on our every prebuilt ideas.
+I don't claim to be a reinforcement learning expert, but following these courses and reading some main references really made me see that there was a different way to solve lots of everyday optimization problems. It showed me that human policies are not optimal in every domain and that reinforcement provides a way to learn the best way of dealing with a problem. We only tell our algorithm what it has to accomplish, we don't tell it how to do it
 
 
