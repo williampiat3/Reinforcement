@@ -33,3 +33,10 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 [video](https://youtu.be/0g4j2k_Ggc4)
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/5.ModelFreeControl/model_free_control.ipynb)
+
+## 6. Function Approximators
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/FA.pdf)
+
+[video](https://youtu.be/UoPei5o4fps)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/6.FunctionApproximators/function_approximators.ipynb)
