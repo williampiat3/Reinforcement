@@ -40,3 +40,18 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 [video](https://youtu.be/UoPei5o4fps)
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/6.FunctionApproximators/function_approximators.ipynb)
+
+## 7. Policy Gradients
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/pg.pdf)
+
+[video](https://youtu.be/KHZVXao4qXs)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/7.PolicyGradients/policy_gradients.ipynb)
+
+## 8. Integrating Learning and Planning
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/dyna.pdf)
+
+[video](https://youtu.be/ItMutbeOHtc)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/8.LearningPlanning/learning_planning.md)
+
