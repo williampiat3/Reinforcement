@@ -62,3 +62,7 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/9.ExplorationExploitation/exploration_exploitation.ipynb)
 
+## Easy 21
+[subject](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/Easy21-Johannes.pdf)
+
+[my answers](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/Easy21/easy21.ipynb)

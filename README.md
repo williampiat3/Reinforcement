@@ -5,7 +5,7 @@ Following the [excellent course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Tea
 ## Lessons
 Following the lessons of the UCL I implemented some of the situations presented in the lessons so as to check my personal understanding of reinforcement learning. And this is how I will organize this folder: For each lesson I will present my codes that implement the class examples. The goal here is therefore to complete the lecture using my personal scripts.
 ## Personal extentions
-Using my newly acquired experience I applied reinforcement learning to some cases of my own to check if it was able to solve some environements. Some of the environement come from [gym](https://gym.openai.com/) some others were environements I coded.
+Using my newly acquired experience I applied reinforcement learning to some cases of my own to check if it was able to solve some environements. I tried for instance to code an optimization of elevators so as to minimize the wainting time of users, an implementation on which I am still working on
 
 # About
 I don't claim to be a reinforcement learning expert, but following these courses and reading some main references really made me see that there was a different way to solve lots of everyday optimization problems. It showed me that human policies are not optimal in every domain and that reinforcement provides a way to learn the best way of dealing with a problem. We only tell our algorithm what it has to accomplish, we don't tell it how to do it
