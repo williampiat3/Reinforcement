@@ -4,4 +4,4 @@ This lesson introduces the concept of a model based RL agent: the agent has the 
 
 It allows using Monte Carlo Tree Search (MCTS) to explore the best actions that could be performed in a short distant future
 
-MCTS was, before DeepMind's value network, the state of the art in terms of Go playing programs: it samples the most promising actions using the different rollouts that the algorithm performed from the current state (We will be back on MCTS on the next lesson)
+MCTS was, before DeepMind's value network, the state of the art in terms of Go playing programs: it samples the most promising actions using the different rollouts that the algorithm performed from the current state (We will be back on MCTS on the next lesson as the action picking algorithm are inspired by the bandits algorithms

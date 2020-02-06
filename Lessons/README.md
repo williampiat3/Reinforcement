@@ -55,3 +55,10 @@ Here is are my notes concerning the lessons of that I followed on reinforcement 
 
 [my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/8.LearningPlanning/learning_planning.md)
 
+## 9. Exploration and Exploitation
+[slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/XX.pdf)
+
+[video](https://youtu.be/sGuiWX07sKw)
+
+[my comments](https://github.com/williampiat3/Reinforcement/blob/master/Lessons/9.ExplorationExploitation/exploration_exploitation.ipynb)
+
