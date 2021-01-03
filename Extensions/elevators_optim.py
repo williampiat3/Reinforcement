@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+import torch.distributions as distrib
 
 
 #intentions are an hour and a floor meaning that at that time people need to be at this floor
@@ -29,6 +30,65 @@ class Person():
 			else:
 				current_intention = self.intentions[intention_time]
 		return current_intention
+
+class Distribution():
+	"""
+	Wrapper of a distribution, virtual class
+	"""
+	def sample(self):
+		"""
+		virtual function
+		"""
+		raise NotImplementedError
+
+## Population class to sample different individuals every day so as to enforce generalisation
+
+class PtDistribution(Distribution):
+	def __init__(self,pytorch_distrib):
+		self.m = pytorch_distrib
+
+	def sample(self):
+		return self.m.sample().item()
+
+
+def sample_if_possible(item):
+	if isinstance(item,Distribution):
+		return item.sample()
+	else:
+		return item
+
+
+
+class Population():
+	"""
+	We only modelise in laws 
+	"""
+	def __init__(self,number, arrival_law,departure_law,floor_law):
+		self.number = number
+		self.arrival_law = arrival_law
+		self.departure_law = departure_law
+		self.floor_law = floor_law
+
+	def sample_population(self,intentions=None):
+		pop = []
+		for k in range(self.number):
+			arrival = int(self.arrival_law.sample())
+			departure = int(self.departure_law.sample())
+			floor_hour = arrival + 20
+			floor = int(self.floor_law.sample())
+			individual = Person(arrival,departure)
+			individual.add_new_intention(floor_hour,floor)
+			
+			if intentions is not None:
+				intends = intentions[k]
+				for time,floor in intends:
+					time = sample_if_possible(time)
+					floor = sample_if_possible(floor)
+					individual.add_new_intention(time,floor)
+			pop.append(individual)
+		return pop
+
+
 
 
 
@@ -237,6 +297,34 @@ class StupidElevator():
 		self.cursor =(self.cursor+1)%8
 		return action
 
+class IntelligentElevator():
+	def __init__(self):
+		self.will=-1
+
+	def select_action(self,state_uncoded):
+		floor_filling,elevator_position,elevators_destination,floors_calls,time = state_uncoded
+		loaded = bool(np.max(elevators_destination))
+
+		if self.will == -1 and not loaded:
+			
+			floor_call_per_floor = np.sum(floors_calls,axis=1)
+			if np.max(floor_call_per_floor)==0:
+				self.will=-1
+				return -1
+			else :
+				self.will = np.argmax(floor_call_per_floor)
+		if self.will ==-1 and loaded:
+			self.will = np.argmax(elevators_destination)
+
+		position = np.argmax(elevator_position[0])
+		if self.will == position:
+			self.will=-1
+			return 4
+		if self.will < position:
+			return 1
+		if self.will > position:
+			return 0
+
 
 
 class RandomElevator():
@@ -355,15 +443,30 @@ class AgentLinearSarsa(nn.Module):
 			param.grad.data.clamp_(-1, 1)
 		optimizer.step()
 
+def initialize_population(number,arrival_law,departure_law,floor_law,intentions=None):
+	pop = Population(number, arrival_law,departure_law,floor_law)
+	persons = pop.sample_population(intentions)
+	return  persons
 
-if __name__ == "__main__":
+
+def test_linear_sarsa():
+	arrival_law = PtDistribution(distrib.uniform.Uniform(700,901))
+	departure_law= PtDistribution(distrib.uniform.Uniform(1800,1870))
+	floor_law = PtDistribution(distrib.categorical.Categorical(probs=torch.Tensor([0.,0.3,0.7])))
+	number =7
+
+	persons = initialize_population(number,arrival_law,departure_law,floor_law)
+
 
 	# Intialize Tower
+
+
 	nb_floors=3
 	nb_elevators=1
-	persons=[Person(arrival,departure) for arrival,departure in zip(range(700,1050,50),range(1800,1870,10))]
-	for index,person in enumerate(persons):
-		person.add_new_intention(person.arrival+index*10,index%nb_floors)
+	# persons=[Person(arrival,departure) for arrival,departure in zip(range(700,1050,50),range(1800,1870,10))]
+
+	# for index,person in enumerate(persons):
+	# 	person.add_new_intention(person.arrival+index*10,index%nb_floors)
 	
 	tower = Tower(persons,nb_floors,nb_elevators)
 
@@ -372,7 +475,7 @@ if __name__ == "__main__":
 	state_dim = translate_state(tower.state).shape[0]
 	action_dim = 5
 	epsilon = 0.9
-	epsilon_decay=0.96
+	epsilon_decay=0.98
 	gamma=0.999
 	learning_rate=0.01
 
@@ -383,8 +486,8 @@ if __name__ == "__main__":
 
 	#init agent
 	agent = AgentLinearSarsa(state_dim,action_dim,epsilon,epsilon_decay,gamma)
-
-	#a target net to avoid over-fitting the current policy
+	# agent_elev = IntelligentElevator()
+	# a target net to avoid over-fitting the current policy
 	target_net = AgentLinearSarsa(state_dim,action_dim,epsilon,epsilon_decay,gamma)
 	target_net.load_state_dict(agent.state_dict())
 	#using RMSprop but Adam works perfectly
@@ -393,8 +496,8 @@ if __name__ == "__main__":
 
 	#run trials
 	number_of_trials =50000
-
 	for trial in range(number_of_trials):
+
 		#get state
 		state = tower.state
 		#cast it in torch
@@ -423,13 +526,129 @@ if __name__ == "__main__":
 		print("Trial Nb: ",trial)
 		print("Number of minutes waited: ",-summed_rwd)
 		print("Percentage of random actions: ", agent.epsilon)
-		tower.reset()
-		#assigning network to the target net (for value iteration)
+		# tower.reset()
+		persons = initialize_population(number,arrival_law,departure_law,floor_law)
+		tower = Tower(persons,nb_floors,nb_elevators)
+
+		# assigning network to the target net (for value iteration)
 		if trial%2 == 0:
 			target_net.load_state_dict(agent.state_dict())
 		agent.decay()
 
 
+def test_intelligent():
+	arrival_law = PtDistribution(distrib.uniform.Uniform(700,901))
+	departure_law= PtDistribution(distrib.uniform.Uniform(1800,1870))
+	floor_law = PtDistribution(distrib.categorical.Categorical(probs=torch.Tensor([0.,0.3,0.7])))
+	number =7
+
+	persons = initialize_population(number,arrival_law,departure_law,floor_law)
+
+
+	# Intialize Tower
+
+
+	nb_floors=3
+	nb_elevators=1
+	# persons=[Person(arrival,departure) for arrival,departure in zip(range(700,1050,50),range(1800,1870,10))]
+
+	# for index,person in enumerate(persons):
+	# 	person.add_new_intention(person.arrival+index*10,index%nb_floors)
+	
+	tower = Tower(persons,nb_floors,nb_elevators)
+
+
+	agent = IntelligentElevator()
+
+
+	#run trials
+	results = []
+	number_of_trials =50000
+	for trial in range(number_of_trials):
+
+		#get state
+		state = tower.state
+		#metric: length waited
+		summed_rwd=0
+		#bool for final state
+		done = False
+		#run episode
+		while not done:
+			#select action
+			action = agent.select_action(state)
+			#process action
+			new_state,reward,done = tower.step(action)
+			#adding number of  unsatisfied people to the metric
+			summed_rwd += reward
+
+			state = new_state
+		results.append(-summed_rwd)
+
+
+		# tower.reset()
+		persons = initialize_population(number,arrival_law,departure_law,floor_law)
+		tower = Tower(persons,nb_floors,nb_elevators)
+	print("Average performance:",np.mean(results))
+
+
+
+
+def test_stupid():
+	arrival_law = PtDistribution(distrib.uniform.Uniform(700,901))
+	departure_law= PtDistribution(distrib.uniform.Uniform(1800,1870))
+	floor_law = PtDistribution(distrib.categorical.Categorical(probs=torch.Tensor([0.,0.3,0.7])))
+	number =7
+
+	persons = initialize_population(number,arrival_law,departure_law,floor_law)
+
+
+	# Intialize Tower
+
+
+	nb_floors=3
+	nb_elevators=1
+	# persons=[Person(arrival,departure) for arrival,departure in zip(range(700,1050,50),range(1800,1870,10))]
+
+	# for index,person in enumerate(persons):
+	# 	person.add_new_intention(person.arrival+index*10,index%nb_floors)
+	
+	tower = Tower(persons,nb_floors,nb_elevators)
+
+
+	agent = StupidElevator()
+
+
+	#run trials
+	results = []
+	number_of_trials =50000
+	for trial in range(number_of_trials):
+
+		#get state
+		state = tower.state
+		#metric: length waited
+		summed_rwd=0
+		#bool for final state
+		done = False
+		#run episode
+		while not done:
+			#select action
+			action = agent.select_action(state)
+			#process action
+			new_state,reward,done = tower.step(action)
+			#adding number of  unsatisfied people to the metric
+			summed_rwd += reward
+
+			state = new_state
+		results.append(-summed_rwd)
+
+
+		# tower.reset()
+		persons = initialize_population(number,arrival_law,departure_law,floor_law)
+		tower = Tower(persons,nb_floors,nb_elevators)
+	print("Average performance:",np.mean(results))
+
+if __name__ == "__main__":
+	test_stupid()
 
 
 
