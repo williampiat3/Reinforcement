@@ -51,7 +51,7 @@ class Tower(Node):
 	Main environement that will we probed by an agent
 	It needs: a list of Persons , a number of floors and a number of elevators
 	"""
-	def __init__(self,persons,nb_floors,nb_elevators):
+	def __init__(self,persons,nb_floors,nb_elevators,capacities=(4,)):
 		#calling constructor of super class
 		super(Tower,self).__init__(0)
 		#the content of the tower is the persons given to the constructor
@@ -76,7 +76,12 @@ class Tower(Node):
 		#end of the day
 		self.stop_hour =2000
 		#elevator capacity
-		self.capacity=13
+		if isinstance(capacities,int):
+			self.capacities=[capacities for _ in range(nb_elevators)]
+		elif len(capacities)!=nb_elevators:
+			raise IndexError("The capacities must be int or iterable of length number of elevators")
+		else:
+			self.capacities = capacities
 
 	def reset(self):
 		"""
@@ -145,7 +150,7 @@ class Tower(Node):
 		elevators_destination = np.zeros((self.nb_elevators,self.nb_floors))
 		elevators_filling = np.zeros(self.nb_elevators)
 		for index_el,el in enumerate(self.elevators):
-			elevators_filling[index_el]= len(el)/self.capacity
+			elevators_filling[index_el]= len(el)/self.capacities[index_el]
 			elevator_position[index_el,self.position_elevators[index_el]]+=1
 			intentions=self.check_intentions(el)
 			for _,_,will in intentions:
@@ -158,7 +163,7 @@ class Tower(Node):
 			intentions=self.check_intentions(floor)
 			for _,_,will in intentions:
 				floors_calls[index_floor,will]+=1
-		return floor_filling,elevator_position,elevators_destination,floors_calls,np.array([self.time])/self.stop_hour
+		return floor_filling,elevators_filling,elevator_position,elevators_destination,floors_calls,np.array([self.time])/self.stop_hour
 
 
 
@@ -219,7 +224,11 @@ class Tower(Node):
 				#just like before the intentions are reversed
 				intentions = self.check_intentions(floor)
 				intentions.reverse()
+				# We check the room available in the elevator
+				number_loadable = self.capacities[order_nb] - len(elevator.content)
 				for index,position,will in intentions:
+					if number_loadable==0:
+						break
 					#If we pick the persons for for going up
 					if arg == 2 or arg ==4:
 						#only the ones going up are entering
@@ -232,6 +241,7 @@ class Tower(Node):
 						if position > will:
 							#pop and append
 							elevator.content.append(floor.content.pop(index))
+					number_loadable = self.capacities[order_nb] - len(elevator.content)
 		#the reward is minus the number of people waiting
 		reward = - len(self.check_intentions(self))
 		return self.state,reward,(self.time>=self.stop_hour)

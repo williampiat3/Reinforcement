@@ -549,6 +549,7 @@ def test_simpler_env():
 		print("agent temperature:",agent.temperature)
 		print("________")
 		env.reset()
+	# # plt.plot(test_stupid(),c="k",label="Naive agent")
 
 
 def test_simpler_env2():
@@ -557,7 +558,7 @@ def test_simpler_env2():
 	arrival_law = PtDistribution(distrib.uniform.Uniform(700,901))
 	departure_law= PtDistribution(distrib.uniform.Uniform(1800,1870))
 	floor_law = PtDistribution(distrib.categorical.Categorical(probs=torch.Tensor([0.,0.3,0.1,0.1,0.4,0.,0.,0.2])))
-	number =10
+	number =15
 
 	persons = initialize_population(number,arrival_law,departure_law,floor_law)
 
@@ -577,7 +578,7 @@ def test_simpler_env2():
 
 	#initialise temperature
 	temperature = 1
-	temperature_decay = 0.998
+	temperature_decay = 0.9994
 	state_dim = translate_state(tower.state).shape[0]
 	action_dim = 5
 
@@ -585,7 +586,7 @@ def test_simpler_env2():
 	agent.decision_module.to(device)
 
 	# define the optimizer
-	learning_rate = 0.0005
+	learning_rate = 0.0001
 	optimizer = optim.Adam(agent.decision_module.parameters(),lr=learning_rate)
 
 	# Building memory
@@ -632,6 +633,7 @@ def test_simpler_env2():
 		print("minutes waited:",-summed_rwd)
 		print("agent temperature:",agent.temperature)
 		print("________")
+		#agent.decay()
 		persons = initialize_population(number,arrival_law,departure_law,floor_law)
 		tower = Tower(persons,nb_floors,nb_elevators)
 
@@ -651,3 +653,4 @@ if __name__ == "__main__":
 
 
 
+	# # plt.plot(test_stupid(),c="k",label="Naive agent")
