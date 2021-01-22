@@ -321,7 +321,7 @@ def test_intelligent():
 	arrival_law = PtDistribution(distrib.uniform.Uniform(700,901))
 	departure_law= PtDistribution(distrib.uniform.Uniform(1800,1870))
 	floor_law = PtDistribution(distrib.categorical.Categorical(probs=torch.Tensor([0.,0.3,0.1,0.1,0.4,0.,0.,0.2])))
-	number =10
+	number =15
 
 	persons = initialize_population(number,arrival_law,departure_law,floor_law)
 
@@ -479,79 +479,6 @@ def manual_debug():
 		
 	return results
 
-
-def test_simpler_env():
-
-	#initialize environement
-	dim = 2
-	min_value = -0.3
-	max_value = 0.3
-	drag = 0.9
-	gamma = 0.93
-	env = Environement(dim,min_value,max_value,drag)
-	env.reset()
-
-
-	#initialise temparature
-	temperature = 1
-	temperature_decay = 0.998
-
-	agent = AgentReinforceTorch(env.state_dim,env.action_dim,temperature,temperature_decay)
-
-	# define the optimizer
-	learning_rate = 0.001
-	optimizer = optim.Adam(agent.decision_module.parameters(),lr=learning_rate)
-
-	# Building memory
-	capacity = 200000
-	batch_size=500
-	memory = ReplayMemory(capacity)
-
-	nb_iterations=10000
-
-	lens=[]
-	#iterate
-	for iteration in range(nb_iterations):
-		state = env.state
-		done = False
-		history = []
-		summed_rwd= 0
-		t=0
-		
-		while not done:
-			action = agent.select_action(state)
-			new_state, reward, done = env.step(action)
-			history.append((state,action,reward))
-			state = new_state
-			t+=1
-			if t>1600:
-				break
-
-
-		#discounting and normalizing values
-		values=[]
-		#discount and sum
-		for i in range(len(history)):
-			values.append(sum([x[2]*gamma**t for t,x in enumerate(history[i:])]))
-		values = np.array(values)
-		#normalize
-		values = (values-np.mean(values))/(np.std(values)+0.001)
-		#adding to memory
-		for i in range(len(history)):
-			memory.push(history[i][0].view(1,-1),torch.tensor([history[i][1]]).long(),torch.tensor([values[i]]).float())
-		agent.update_network(memory,optimizer)
-		#empty memory
-		memory.memory=[]
-		memory.position=0
-
-		#plots and prints
-		print("minutes waited:",t)
-		print("agent temperature:",agent.temperature)
-		print("________")
-		env.reset()
-	# # plt.plot(test_stupid(),c="k",label="Naive agent")
-
-
 def test_simpler_env2():
 	device = torch.device("cuda")
 	gamma = 0.93
@@ -636,6 +563,7 @@ def test_simpler_env2():
 		#agent.decay()
 		persons = initialize_population(number,arrival_law,departure_law,floor_law)
 		tower = Tower(persons,nb_floors,nb_elevators)
+	torch.save(agent.decision_module,"trained_agent.pt")
 
 
 
@@ -649,6 +577,7 @@ if __name__ == "__main__":
 	# plt.xlabel("Trial")
 	# # plt.ylim(0,400)
 	# plt.show()
+	# test_intelligent()
 	test_simpler_env2()
 
 

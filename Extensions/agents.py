@@ -28,7 +28,7 @@ class IntelligentElevator():
 		self.will=-1
 
 	def select_action(self,state_uncoded):
-		floor_filling,elevator_position,elevators_destination,floors_calls,time = state_uncoded
+		floor_filling,elevators_filling,elevator_position,elevators_destination,floors_calls,time = state_uncoded
 		loaded = bool(np.max(elevators_destination))
 
 		if self.will == -1 and not loaded:
